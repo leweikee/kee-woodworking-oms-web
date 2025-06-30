@@ -1,0 +1,152 @@
+<div class="form-container">
+  <div *ngIf="serverValidationErrors.length > 0" class="server-error-list">
+    <ul style="padding-left: 16px">
+      <li *ngFor="let error of serverValidationErrors">{{ error }}</li>
+    </ul>
+  </div>
+
+  <form [formGroup]="userForm" nz-form [nzLayout]="'vertical'">
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="firstName">First Name</nz-form-label>
+          <nz-form-control nzErrorTip="First name is required">
+            <input nz-input formControlName="firstName" id="firstName" autocomplete="given-name"
+              [disabled]="isReactivation" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="lastName">Last Name</nz-form-label>
+          <nz-form-control nzErrorTip="Last name is required">
+            <input nz-input formControlName="lastName" id="lastName" autocomplete="family-name"
+              [disabled]="isReactivation" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row [nzGutter]="16" style="margin-top: 20px;">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="username">Username</nz-form-label>
+          <nz-form-control [nzErrorTip]="usernameError">
+            <input nz-input formControlName="userName" id="userName" autocomplete="username"
+              [disabled]="isReactivation" />
+            <ng-template #usernameError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Username is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('minlength')">
+                Minimum 6 characters
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="8" *ngIf="!isEdit || isReactivation">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="password">Temporary Password</nz-form-label>
+          <nz-form-control [nzErrorTip]="passwordError">
+            <input nz-input type="password" formControlName="password" id="password" autocomplete="off"
+              [disabled]="isEdit" />
+            <ng-template #passwordError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Temporary password is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('minlength')">
+                Minimum 8 characters<br>
+              </ng-container>
+              <ng-container *ngIf="control.hasError('passwordStrength')">
+                Must include uppercase, lowercase, number, and special character
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="empNumber">Employee No</nz-form-label>
+          <nz-form-control [nzErrorTip]="empNumberError">
+            <input nz-input formControlName="empNumber" id="empNumber" autocomplete="off" [disabled]="isReactivation" />
+            <ng-template #empNumberError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Employee No is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('minlength')">
+                Minimum 6 characters
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="email">Email</nz-form-label>
+          <nz-form-control [nzErrorTip]="emailError">
+            <input nz-input type="email" formControlName="email" id="email" autocomplete="email"
+              [disabled]="isReactivation" />
+            <ng-template #emailError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Email is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('email')">
+                Invalid email format
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="phoneNumber">Phone Number</nz-form-label>
+          <nz-form-control [nzErrorTip]="phoneNumberError">
+            <input nz-input formControlName="phoneNumber" id="phoneNumber" autocomplete="tel" />
+            <ng-template #phoneNumberError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Phone Number is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('minlength') || control.hasError('maxlength')">
+                Must be 10-11 digits
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="role">Role</nz-form-label>
+          <nz-form-control nzErrorTip="Role is required">
+            <nz-select formControlName="role" id="role" nzPlaceHolder="Select a role">
+              <nz-option *ngFor="let role of roleList" [nzLabel]="role" [nzValue]="role"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <!-- <div nz-row justify="end" style="margin-top: 24px;"> -->
+    <div class="form-footer">
+      <button nz-button nzType="default" (click)="onSave()" [nzLoading]="loading" *ngIf="!isReactivation">
+        Save
+        <nz-icon nzType="save" nzTheme="outline" />
+      </button>
+      <button nz-button nzType="default" (click)="onReactivate()" [nzLoading]="loading" *ngIf="isReactivation">
+        Reactivate
+        <nz-icon nzType="save" nzTheme="outline" />
+      </button>
+    </div>
+    <!-- </div> -->
+  </form>
+</div>

@@ -1,0 +1,21 @@
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 16px;
+}
+
+.user-info h3 {
+    margin: 0;
+    font-weight: bold;
+}
+  
+.user-info p {
+    margin: 0;
+    color: #3f3f3f;
+}
+
+.ant-form-item {
+    margin-bottom: 10px
+}
+

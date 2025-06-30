@@ -1,0 +1,68 @@
+<div class="container">
+  <div class="profile-header">
+    <div class="avatar">
+      <nz-avatar nzIcon="user" nzSize="large"></nz-avatar>
+    </div>
+    <div class="user-info">
+      <h3>{{ fullName }}</h3>
+      <p>{{ role }}</p>
+    </div>
+  </div>
+
+  <nz-divider></nz-divider>
+
+  <form [formGroup]="profileForm" nz-form [nzLayout]="'vertical'">
+    <div nz-row [nzGutter]="32">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label>First Name</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="firstName" [disabled]="isReadonly" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label>Last Name</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="lastName" [disabled]="isReadonly" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <div nz-row [nzGutter]="32">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label>Employee No</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="empNumber" [disabled]="isReadonly" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row [nzGutter]="32" style="margin-top: 25px;">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label>Email</nz-form-label>
+          <nz-form-control> 
+            <input nz-input formControlName="email" [disabled]="isReadonly" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label>Phone Number</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="phoneNumber" [disabled]="isReadonly" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</div>

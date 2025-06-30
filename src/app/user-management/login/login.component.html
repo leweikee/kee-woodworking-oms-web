@@ -1,0 +1,40 @@
+<div class="login-container">
+  <div class="login-form-wrapper">
+    <div class="user-icon">
+      <i nz-icon nzType="user" nzTheme="outline"></i>
+    </div>
+
+    <form nz-form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please enter your email">
+          <nz-input-group nzSuffixIcon="mail">
+            <input type="email" nz-input formControlName="email" placeholder="Email" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="passwordError">
+          <nz-input-group nzSuffixIcon="lock">
+            <input type="password" nz-input formControlName="password" placeholder="Password" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #passwordError let-control>
+        <ng-container *ngIf="control.hasError('required')">
+          Please enter your password
+        </ng-container>
+        <ng-container *ngIf="control.hasError('minlength')">
+          Password must be at least 8 characters<br>
+        </ng-container>
+        <ng-container *ngIf="control.hasError('passwordStrength')">
+          Must include uppercase, lowercase, number, and special character
+        </ng-container>
+      </ng-template>
+
+      <button nz-button nzType="link" type="button" (click)="onForgotPassword()" class="forgot-password-button">Forgot Password</button>
+      <button nz-button [nzLoading]="loading" type="submit" class="login-form-button">LOGIN</button>
+    </form>
+  </div>
+</div>
