@@ -1,0 +1,45 @@
+<nz-spin [nzSpinning]="loading">
+  <!-- Summary Cards -->
+  <div nz-row nzGutter="16" class="summary-row">
+    <div nz-col *ngFor="let card of summaryList">
+      <nz-card [nzBodyStyle]="{ 'background-color': '#f0f4ff', 'box-shadow': '0 2px 8px rgba(0,0,0,0.1)' }">
+        <div class="title">{{ card.title }}</div>
+        <div class="value">{{ card.value }}</div>
+      </nz-card>
+    </div>
+  </div>
+
+  <!-- Chart and Notifications Side by Side -->
+  <div nz-row nzGutter="24" nzJustify="space-between" style="margin-top: 30px;">
+    <!-- Chart -->
+    <div nz-col nzSpan="12"
+      style="position: relative; padding: 20px 20px 20px 20px; border: 1px solid #d9d9d9; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px;">
+      <button nz-button nzType="link" nzSize="small" (click)="downloadChart()" 
+        style="position: absolute; top: 20px; right: 20px; box-shadow: none; background: none; border: none; 
+        z-index: 9999; padding: 8px; cursor: pointer;">
+        <span nz-icon nzType="download" nzTheme="outline"></span>
+      </button>
+
+      <div style="justify-content: center; align-items: center;">
+        <p-chart *ngIf="chartOptions" [type]="chartOptions.type" [data]="chartOptions.data"
+          [options]="chartOptions.options" style="max-width: 100%; height: auto; display: block;">
+        </p-chart>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div nz-col nzSpan="11"
+      style="padding: 20px 20px; border: 1px solid #d9d9d9; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px;">
+      <h3 style="color:#ff0000">
+        <b style="margin-right: 10px;">Notifications</b>
+        <nz-icon nzType="notification" nzTheme="outline" nzTwotoneColor="#ff0000"></nz-icon>
+      </h3>
+      <ul *ngIf="notifications.length > 0">
+        <li *ngFor="let note of notifications">
+          <b><i>{{ note }}</i></b>
+        </li>
+      </ul>
+      <span *ngIf="notifications.length == 0"><i>--No Notifications Now--</i></span>
+    </div>
+  </div>
+</nz-spin>
