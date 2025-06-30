@@ -1,0 +1,55 @@
+<div class="form-container">
+  <div nz-row nzJustify="end" class="header-row">
+    <div nz-col>
+      <button nz-button nzShape="circle" nzType="primary" (click)="addItem()">
+        <nz-icon nzType="plus" nzTheme="outline"></nz-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Items Table -->
+  <nz-table [nzData]="selectedItems" [nzSize]="'small'" [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of selectedItems; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.code }}</td>
+        <td>{{ item.name }}</td>
+        <td>
+          <input nz-input type="number" name="quantity{{ i }}" min="1" step="1" [(ngModel)]="item.quantity" required
+            #quantityCtrl="ngModel" />
+
+          <div *ngIf="quantityCtrl.invalid && (quantityCtrl.dirty || quantityCtrl.touched)" class="error-text">
+            <div *ngIf="quantityCtrl.errors?.['required']">Quantity is required.</div>
+            <div *ngIf="quantityCtrl.errors?.['min']">Quantity must be at least 1.</div>
+          </div>
+          <div *ngIf="item.quantity && !isInteger(item.quantity)">Quantity must be an integer.</div>
+          <div *ngIf="item.quantity && item.availableQty != null && item.quantity > item.availableQty" class="error-text">
+            Cannot exceed available stock (Max: {{ item.availableQty }}).
+          </div>
+        </td>
+        <td>{{ item.unit }}</td>
+        <td>
+          <button nz-button nzType="link" nzDanger (click)="removeItem(item.id)">Remove</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <!-- Save Button: Show only if there are items -->
+  <div class="form-footer" style="margin-top: 24px;" *ngIf="selectedItems.length > 0">
+    <button nz-button nzType="default" (click)="onSave()" [nzLoading]="loading">
+      Save
+      <nz-icon nzType="save" nzTheme="outline"></nz-icon>
+    </button>
+  </div>
+</div>
