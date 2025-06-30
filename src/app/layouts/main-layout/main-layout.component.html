@@ -1,0 +1,102 @@
+<nz-layout class="app-layout">
+  <div class="header-banner">
+    <img src="/images/header2.png" alt="Kee Woodworking Industries">
+  </div>
+
+  <div class="content-layout">
+    <!--Side Navigation-->
+    <nz-sider class="menu-sidebar" nzCollapsible nzWidth="300px" nzBreakpoint="lg" [(nzCollapsed)]="isCollapsed"
+      [nzTrigger]="null">
+      <div class="menu-header">
+        <div class="flex-spacer"></div>
+        <button nz-button nzType="text" (click)="isCollapsed = !isCollapsed" class="collapse-button">
+          <i nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+        </button>
+      </div>
+
+      <ul nz-menu nzTheme="light" nzMode="inline" [nzInlineCollapsed]="isCollapsed" class="enlarged-menu">
+        <li nz-menu-item nzMatchRouter>
+          <a routerLink="/home"><i nz-icon nzType="home"></i><span>Dashboard</span></a>
+        </li>
+
+        <li nz-submenu [(nzOpen)]="openMap['sub1']" (nzOpenChange)="openHandler('sub1')" nzTitle="User Management"
+          nzIcon="idcard" *ngIf="isAdmin">
+          <ul>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="/users">All Users</a>
+            </li>
+          </ul>
+        </li>
+
+        <li nz-submenu [(nzOpen)]="openMap['sub2']" (nzOpenChange)="openHandler('sub2')" nzTitle="Order Management"
+          nzIcon="file-done">
+          <ul>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="/orders">All Orders</a>
+            </li>
+          </ul>
+        </li>
+
+        <li nz-submenu [(nzOpen)]="openMap['sub3']" (nzOpenChange)="openHandler('sub3')" nzTitle="Inventory Management"
+          nzIcon="product">
+          <ul>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="/inventories">All Stock Level</a>
+            </li>
+            <li nz-menu-item nzMatchRouter *ngIf="isAdmin || isInventory">
+              <a routerLink="/inventoriesMovements">Manage Movements</a>
+            </li>
+          </ul>
+        </li>
+
+        <li nz-submenu [(nzOpen)]="openMap['sub4']" (nzOpenChange)="openHandler('sub4')" nzTitle="Supplier Management"
+          nzIcon="truck">
+          <ul>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="/suppliers">All Suppliers</a>
+            </li>
+          </ul>
+        </li>
+
+        <li nz-submenu [(nzOpen)]="openMap['sub5']" (nzOpenChange)="openHandler('sub5')"
+          nzTitle="Acquisitions Management" nzIcon="transaction">
+          <ul>
+            <li nz-menu-item nzMatchRouter>
+              <a routerLink="/acquisitions">All Acquisitions</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nz-sider>
+
+    <nz-layout>
+      <nz-header class="app-header">
+        <div class="header-wrapper">
+          <div class="header-left">
+            <span class="date-display">{{ formattedDate }}</span>
+          </div>
+          <div class="header-right">
+            <a nz-dropdown [nzDropdownMenu]="menu" class="user-dropdown">
+              <nz-avatar nzIcon="user"></nz-avatar>
+              <span class="username">{{ username }}</span>
+              <nz-icon nzType="caret-down" nzTheme="outline" style="color: rgba(0, 0, 0, 0.65)"/>
+            </a>
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+              <ul nz-menu nzSelectable>
+                <li nz-menu-item [nzSelected]="isProfileActive()" (click)="openProfile()" class="profile-menu-item">Profile</li>
+                <li nz-menu-item (click)="logout()">Logout</li>
+              </ul>
+            </nz-dropdown-menu>
+          </div>
+        </div>
+      </nz-header>
+
+      <!--Content-->
+      <nz-content>
+        <div class="inner-content">
+          <router-outlet></router-outlet>
+        </div>
+      </nz-content>
+    </nz-layout>
+  </div>
+</nz-layout>
