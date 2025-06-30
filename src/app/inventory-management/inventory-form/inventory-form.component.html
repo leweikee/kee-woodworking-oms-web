@@ -1,0 +1,142 @@
+<div class="form-container">
+  <div *ngIf="serverValidationErrors.length > 0" class="server-error-list">
+    <ul style="padding-left: 16px">
+      <li *ngFor="let error of serverValidationErrors">{{ error }}</li>
+    </ul>
+  </div>
+
+  <form [formGroup]="inventoryForm" nz-form [nzLayout]="'vertical'">
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="code">Code</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Code is required'">
+            <input nz-input formControlName="code" (input)="onInputUppercase('code', $event)"
+              [disabled]="isReactivation" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="name">Name</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Name is required'">
+            <input nz-input formControlName="name" (input)="onInputUppercase('name', $event)" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row [nzGutter]="16" style="margin-top: 20px;">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="category">Category</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Category is required'">
+            <nz-select formControlName="category" nzPlaceHolder="Select category">
+              <nz-option *ngFor="let s of catList" [nzValue]="s.value" [nzLabel]="s.label"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label nzFor="supplier">Supplier</nz-form-label>
+          <nz-form-control [nzErrorTip]="supplierError">
+            <nz-select formControlName="supplier" nzPlaceHolder="Select supplier" nzAllowClear>
+              <nz-option *ngFor="let s of supplierList" [nzValue]="s.id" [nzLabel]="s.name"></nz-option>
+            </nz-select>
+            <ng-template #supplierError let-control>
+              <ng-container
+                *ngIf="control.hasError('supplierRequired')">
+                Supplier is required for Materials category
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <div nz-row [nzGutter]="16" style="margin-top: 20px;">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="quantity">Total Quantity</nz-form-label>
+          <nz-form-control [nzErrorTip]="qtyError">
+            <input nz-input formControlName="quantity" type="number" [disabled]="isEdit" min=1 step=1 />
+            <ng-template #qtyError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Quantity is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('pattern')">
+                Must be more than 0. <br> Decimal points is not allowed
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="unit">Unit</nz-form-label>
+          <nz-form-control [nzErrorTip]="unitError">
+            <input nz-input formControlName="unit" (input)="onInputUppercase('unit', $event)" />
+            <ng-template #unitError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Unit is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('pattern')">
+                Must be in letters only
+              </ng-container>
+            </ng-template>
+
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row [nzGutter]="16" style="margin-top: 20px;">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="unitPrice">Unit Price</nz-form-label>
+          <nz-form-control [nzErrorTip]="unitPriceError">
+            <input nz-input formControlName="unitPrice" type="number" step="0.0001" />
+            <ng-template #unitPriceError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Unit Price is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('pattern')">
+                Maximum 4 decimal points
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="minQty">Minimum Quantity</nz-form-label>
+          <nz-form-control [nzErrorTip]="minQtyError">
+            <input nz-input formControlName="minQty" type="number" min=1 step=1 />
+            <ng-template #minQtyError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Minimum Quantity is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('minQtyExceed')">
+                Must be lower than Total Quantity
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <button nz-button nzType="default" (click)="onSave()" [nzLoading]="loading" *ngIf="!isReactivation">
+        Save
+        <nz-icon nzType="save" nzTheme="outline" />
+      </button>
+      <button nz-button nzType="default" (click)="onReactivate()" [nzLoading]="loading" *ngIf="isReactivation">
+        Reactivate
+        <nz-icon nzType="save" nzTheme="outline" />
+      </button>
+    </div>
+  </form>
+</div>
