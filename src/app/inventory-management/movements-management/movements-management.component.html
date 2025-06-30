@@ -1,0 +1,12 @@
+<nz-tabset [(nzSelectedIndex)]="selectedTabIndex">
+  <nz-tab nzTitle="Inbound">
+    <ng-container *ngIf="selectedTabIndex === 0">
+      <app-inbound-listing></app-inbound-listing>
+    </ng-container>
+  </nz-tab>
+  <nz-tab nzTitle="Outbound">
+    <ng-container *ngIf="selectedTabIndex === 1">
+      <app-outbound-listing></app-outbound-listing>
+    </ng-container>
+  </nz-tab>
+</nz-tabset>
