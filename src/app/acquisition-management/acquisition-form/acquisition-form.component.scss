@@ -1,0 +1,27 @@
+.ant-form-item {
+    margin-bottom: 0
+}
+
+.form-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 24px;
+}
+
+.server-error-list {
+  color: #ff4d4f; /* Optional: Red like Ant Design validation */
+}
+
+.error-text {
+  color: red;
+}
+
+.header-row {
+  margin-bottom: 10px;
+}
+
+.status-draft { color: gray; }
+.status-created { color: blue; }
+.status-sent { color: orange; }
+.status-received { color: green; }

@@ -1,0 +1,106 @@
+<div class="form-container">
+  <form [formGroup]="acquisitionForm" nz-form [nzLayout]="'vertical'">
+
+    <!-- Created Date & Status (only in view) -->
+    <div nz-row nzGutter="16" *ngIf="mode === 'view'" style="margin-bottom: 20px;">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label>Created Date</nz-form-label>
+          <nz-form-control>{{ formatDate(acquisition.created) }}</nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label>Status</nz-form-label>
+          <nz-form-control [ngClass]="getStatusClass(acquisition.status)">{{ acquisition?.status }}</nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <!-- Supplier -->
+    <div nz-row nzGutter="16">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Supplier</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Supplier is required'">
+            <ng-container *ngIf="mode === 'view'">
+              {{ acquisition?.supplierName }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <nz-select formControlName="supplierId" nzPlaceHolder="Select supplier"
+                (ngModelChange)="onSupplierChange()">
+                <nz-option *ngFor="let s of supplierList" [nzValue]="s.id" [nzLabel]="s.name"></nz-option>
+              </nz-select>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <!-- Acquisition Items Header -->
+    <div class="mb-2">
+      <div nz-row nzJustify="space-between" nzAlign="middle" class="header-row">
+        <div nzCol nzSpan="22"><b>Acquisition Items</b></div>
+        <div nz-col nzSpan="1" *ngIf="mode !== 'view' && acquisitionForm.value.supplierId">
+          <button nz-button nzShape="circle" nzType="primary" (click)="addItem()">
+            <nz-icon nzType="plus" nzTheme="outline"></nz-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item List -->
+    <nz-table [nzData]="selectedItems" [nzSize]="'small'" [nzShowPagination]="false" style="margin-top: 10px;">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Quantity</th>
+          <th>Unit</th>
+          <th *ngIf="mode !== 'view'">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of selectedItems; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.code }}</td>
+          <td>{{ item.name }}</td>
+          <td>
+            <ng-container *ngIf="mode === 'view'">{{ item.quantity }}</ng-container>
+
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input type="number" name="quantity{{ i }}" min="1" step="1" [(ngModel)]="item.quantity" required
+                [ngModelOptions]="{ standalone: true }" #quantityCtrl="ngModel" />
+
+              <div
+                *ngIf="(quantityCtrl.invalid && (quantityCtrl.dirty || quantityCtrl.touched)) || !isInteger(item.quantity)"
+                class="error-text">
+                <div *ngIf="quantityCtrl.errors?.['required']">Quantity is required.</div>
+                <div *ngIf="quantityCtrl.errors?.['min']">Quantity must be at least 1.</div>
+                <div *ngIf="item.quantity != null && !isInteger(item.quantity)">Quantity must be an integer.</div>
+              </div>
+            </ng-container>
+          </td>
+
+          <td>{{ item.unit }}</td>
+          <td *ngIf="mode !== 'view'">
+            <button nz-button nzSize="small" nzType="link" nzDanger (click)="removeItem(item.id)">Remove</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+    <!-- Save Buttons -->
+    <div class="form-footer mt-3" *ngIf="(mode === 'edit' || mode === 'create') && selectedItems.length > 0">
+      <button nz-button nzType="default" (click)="onSave(true)" [nzLoading]="loading">
+        Save as Draft
+      </button>
+      <button nz-button nzType="primary" (click)="onSave(false)" [nzLoading]="loading" style="margin-left: 8px;">
+        Submit
+      </button>
+    </div>
+  </form>
+</div>
