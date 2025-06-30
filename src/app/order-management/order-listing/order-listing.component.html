@@ -1,0 +1,103 @@
+<div class="container mt-4">
+  <div nz-row nzJustify="end" class="header-row" *ngIf="hasAccess">
+    <div nz-col>
+      <button nz-button nzShape="circle" nzType="primary" (click)="createOrder()">
+        <nz-icon nzType="plus" nzTheme="outline"></nz-icon>
+      </button>
+    </div>
+  </div>
+
+  <div nz-row nzJustify="space-between" nzAlign="middle" class="mb-3">
+    <div nz-col nzSpan="17">
+      <nz-input-group nzPrefixIcon="search" [nzSuffix]="clearSearchTpl">
+        <input nz-input [formControl]="searchControl" placeholder="Search by OPO No (OPOXXXXXX) or model/code" />
+      </nz-input-group>
+      <ng-template #clearSearchTpl>
+        <span nz-icon nzType="close-circle" nzTheme="fill" *ngIf="searchControl.value" (click)="resetSearch()"></span>
+      </ng-template>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-select [formControl]="statusControl" nzAllowClear nzPlaceHolder="All Status" style="width:100%">
+        <nz-option *ngFor="let st of statusList" [nzValue]="st.value" [nzLabel]="st.label"></nz-option>
+      </nz-select>
+    </div>
+  </div>
+
+  <nz-spin [nzSpinning]="loading">
+    <nz-table [nzData]="orderList" [nzPageSize]="pageSize" [nzTotal]="totalCount" [nzPageIndex]="pageNumber"
+      [nzFrontPagination]="false" [nzShowPagination]="true" (nzPageIndexChange)="onPageChange($event)">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th *ngFor="let col of columns">{{ col.header }}</th>
+          <th nzRight class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of orderList; let i = index">
+          <td>{{ (pageNumber - 1) * pageSize + i + 1 }}</td>
+          <td *ngFor="let col of columns">
+            <ng-container [ngSwitch]="col.field">
+              <span *ngSwitchCase="'id'">{{ formatOPONo(data.id) }}</span>
+              <span *ngSwitchCase="'status'" [ngClass]="getStatusClass(data.status)">
+                {{ data.status }}
+                <ng-container *ngIf="data.status === 'Pending' && data.remark">
+                  <span nz-tooltip [nzTooltipTitle]="data.remark" style="margin-left: 4px;">
+                    <nz-icon nzType="info-circle" nzTheme="outline" style="color: #1890ff;"></nz-icon>
+                  </span>
+                </ng-container>
+              </span> <span *ngSwitchCase="'receivedDate'">{{ formatDate(data.receivedDate) }}</span>
+              <span *ngSwitchCase="'deliveryDate'">{{ formatDate(data.actualDelDate) }}</span>
+              <span *ngSwitchCase="'totalRevenue'">
+                {{ data.totalRevenue === 0 || data.totalRevenue == null ? '-' : (data.totalRevenue | number:'1.2-2') }}
+              </span> 
+              <span *ngSwitchDefault>{{ data[col.field] ?? '-' }}</span>
+            </ng-container>
+          </td>
+          <td nzRight class="text-center">
+            <button nz-button nzType="link" nzSize="small" (click)="viewOrder(data)">
+              <nz-icon nzType="eye" nzTheme="outline"></nz-icon>
+            </button>
+
+            <ng-container *ngIf="hasAccess">
+              <button nz-button nzType="link" nzSize="small" (click)="editOrder(data)" [disabled]="data.status!=='Draft'">
+                <nz-icon nzType="edit"></nz-icon>
+              </button>
+              <button nz-button nzType="link" nzSize="small" nzDanger (click)="confirmDelete(data)" [disabled]="data.status !== 'Draft'">
+                <nz-icon nzType="delete"></nz-icon>
+              </button>
+
+              <button nz-button nzType="link" nzSize="small" *ngIf="data.status==='Created'"
+                (click)="updateStatus(data, 'In Progress')">
+                <nz-icon nzType="field-time"></nz-icon>
+              </button>
+              <button nz-button nzType="link" nzSize="small" *ngIf="data.status==='In Progress'"
+                (click)="markCompleted(data)">
+                <nz-icon nzType="check-circle"></nz-icon>
+              </button>
+
+              <button nz-button nzType="link" nzSize="small" *ngIf="data.filePath" (click)="downloadInvoice(data)">
+                <nz-icon nzType="download"></nz-icon>
+              </button>
+
+              <button nz-button nzType="link" nzSize="small" *ngIf="data.status==='Completed'"
+                (click)="sendOrder(data)">
+                <nz-icon nzType="mail"></nz-icon>
+              </button>
+
+              <button nz-button nzType="link" nzSize="small" *ngIf="data.status==='Invoiced'"
+                (click)="updateStatusToDelivered(data)">
+                <nz-icon nzType="schedule"></nz-icon>
+              </button>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-spin>
+
+  <ng-template #dateTemplate>
+    <label>Delivery Date:</label>
+    <input type="date" id="delivered" style="width:100%; margin-top:8px;" />
+  </ng-template>
+</div>

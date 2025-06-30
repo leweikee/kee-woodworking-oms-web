@@ -1,0 +1,322 @@
+<div class="form-container">
+  <div *ngIf="serverValidationErrors.length > 0" class="server-error-list">
+    <ul style="padding-left: 16px">
+      <li *ngFor="let error of serverValidationErrors">{{ error }}</li>
+    </ul>
+  </div>
+
+  <form [formGroup]="orderForm" nz-form [nzLayout]="'vertical'">
+    <!-- OPO No & Status -->
+    <div nz-row nzGutter="24">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">OPO No</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ formatOPONo(order.id) }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input formControlName="opoNo" [disabled]="mode === 'edit'"
+                (input)="onInputNumeric('opoNo', $event)" />
+              <span class="error-text" *ngIf="hasFieldError('opoNo', 'required')">OPO No is required.</span>
+              <span class="error-text" *ngIf="hasFieldError('opoNo', 'pattern')">OPO No must be a number.</span>
+              <span class="error-text" *ngIf="hasFieldError('opoNo', 'maxlength')">OPO No maximum 6 number.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzSpan="8" *ngIf="mode === 'view'">
+        <nz-form-item>
+          <nz-form-label>Status</nz-form-label>
+          <nz-form-control [ngClass]="getStatusClass(order.status)">{{ order?.status }}</nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <!-- Dates -->
+    <div nz-row nzGutter="24" style="margin-top: 20px;">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Issued At</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ formatDate(order.receivedDate) }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input type="date" formControlName="receivedDate" />
+              <span class="error-text" *ngIf="hasFieldError('receivedDate', 'required')">Received date is
+                required.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Request Del. Date</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ formatDate(order.requiredDelDate) }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input type="date" formControlName="requiredDelDate" />
+              <span class="error-text" *ngIf="hasFieldError('requiredDelDate', 'required')">Delivery date is
+                required.<br></span>
+              <span class="error-text" *ngIf="orderForm.get('requiredDelDate')?.hasError('deliveryBeforeReceived')">
+                Delivery date must be later than Received date.
+              </span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8" *ngIf="mode === 'view' && order.status === 'Delivered'">
+        <nz-form-item>
+          <nz-form-label>Actual Del. Date</nz-form-label>
+          <nz-form-control>{{ formatDate(order.actualDelDate) }}</nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <!-- Model Info -->
+    <div nz-row nzGutter="24" style="margin-top: 20px;">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Model</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ order?.model }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input formControlName="model" (input)="onInputUppercase('model', $event)" />
+              <span class="error-text" *ngIf="hasFieldError('model', 'required')">Model is required.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Model Code</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ order?.modelCode }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input formControlName="modelCode" (input)="onInputUppercase('modelCode', $event)" />
+              <span class="error-text" *ngIf="hasFieldError('modelCode', 'required')">Model Code is required.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Model Category</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ order?.modelCategory }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input formControlName="modelCategory" (input)="onInputUppercase('modelCategory', $event)" />
+              <span class="error-text" *ngIf="hasFieldError('modelCategory', 'required')">Category is required.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <!-- Quantity / Unit Price / Total Price -->
+    <div nz-row nzGutter="24" style="margin-top: 20px;">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Quantity</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ order?.quantity }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input type="number" formControlName="quantity" min="1" step="1" />
+              <span class="error-text" *ngIf="hasFieldError('quantity', 'required')">Quantity is required.<br></span>
+              <span class="error-text" *ngIf="hasFieldError('quantity', 'min')">Must be at least 1.</span>
+              <span class="error-text" *ngIf="!isInteger(orderForm.value.quantity)">Must be an integer.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Unit Price (RM)</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ order?.unitPrice | number: '1.4-4' }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input type="number" formControlName="unitPrice" min="0.0001" step="0.0001" />
+              <span class="error-text" *ngIf="hasFieldError('unitPrice', 'required')">Unit Price is required.</span>
+              <span class="error-text" *ngIf="hasFieldError('unitPrice', 'min')">Cannot be zero or negative.</span>
+              <span class="error-text" *ngIf="hasFieldError('unitPrice', 'pattern')">Maximum 4 decimal places allowed.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label>Total Price (RM)</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ order?.totalPrice | number: '1.4-4' }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input formControlName="totalPrice" readonly [value]="orderForm.value.totalPrice | number:'1.4-4'"/>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <!-- Material Used Table -->
+    <div class="mb-2">
+      <div nz-row nzJustify="space-between" nzAlign="middle" class="header-row">
+        <div nz-col nzSpan="22"><b>Material Used</b></div>
+        <div nz-col nzSpan="1" *ngIf="mode !== 'view'">
+          <button nz-button nzShape="circle" nzType="primary" (click)="addItem()">
+            <nz-icon nzType="plus"></nz-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <nz-table [nzData]="selectedItems" [nzSize]="'small'" [nzShowPagination]="false">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Quantity</th>
+          <th>Unit</th>
+          <th *ngIf="mode === 'view' && (order.status === 'Completed' || order.status === 'Invoiced' || order.status === 'Delivered')">Unit Price</th>
+          <th *ngIf="mode === 'view' && (order.status === 'Completed' || order.status === 'Invoiced' || order.status === 'Delivered')">Total Price</th>
+          <th *ngIf="mode !== 'view'">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of selectedItems; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.code }}</td>
+          <td>{{ item.name }}</td>
+          <td>
+            <ng-container *ngIf="mode === 'view'">{{ item.quantity }}</ng-container>
+
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input type="number" [(ngModel)]="item.quantity" min="1" step="1"
+                [ngModelOptions]="{ standalone: true }" (input)="validateItemQuantity(item)" />
+
+              <div *ngIf="item.quantityError" class="error-text">
+                {{ item.quantityError }}
+              </div>
+            </ng-container>
+          </td>
+          <td>{{ item.unit }}</td>
+          <td *ngIf="mode === 'view' && (order.status === 'Completed' || order.status === 'Invoiced' || order.status === 'Delivered')">{{ item.unitPrice | number:'1.4-4' }}</td>
+          <td *ngIf="mode === 'view' && (order.status === 'Completed' || order.status === 'Invoiced' || order.status === 'Delivered')">{{ item.totalPrice | number:'1.4-4' }}</td>
+          <td *ngIf="mode !== 'view'">
+            <button nz-button nzSize="small" nzType="link" nzDanger (click)="removeItem(item.id)">Remove</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+    <!-- Total Costs -->
+    <div nzRow nzGutter="24" *ngIf="mode === 'view' && (order.status === 'Completed' || order.status === 'Invoiced' || order.status === 'Delivered')" style="margin-top: 30px;">
+      <div nz-col nzSpan="8" nzOffSet="16" *ngIf="mode === 'view'">
+        <nz-form-item>
+          <nz-form-label>Total Costs (RM)</nz-form-label>
+          <nz-form-control>
+            {{ order?.materialCost | number:'1.4-4' }}
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <!-- Other Cost Details -->
+    <div nz-row nzGutter="24">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Unit Wages (RM)</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ order?.unitWages | number:'1.4-4' }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input type="number" formControlName="unitWages" step="0.0001" />
+              <span class="error-text" *ngIf="hasFieldError('unitWages', 'required')">Unit wages required.</span>
+              <span class="error-text" *ngIf="hasFieldError('unitWages', 'min')">Cannot be zero or negative.</span>
+              <span class="error-text" *ngIf="hasFieldError('unitWages', 'pattern')">Maximum 4 decimal places allowed.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Other (RM)</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ order?.otherCost | number:'1.4-4' }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input type="number" formControlName="other" step="0.0001" />
+              <span class="error-text" *ngIf="hasFieldError('other', 'required')">Other cost required.</span>
+              <span class="error-text" *ngIf="hasFieldError('other', 'min')">Cannot be zero or negative.</span>
+              <span class="error-text" *ngIf="hasFieldError('other', 'pattern')">Maximum 4 decimal places allowed.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="mode!=='view'">Hardware (RM)</nz-form-label>
+          <nz-form-control>
+            <ng-container *ngIf="mode === 'view'">
+              {{ order?.hardwareCost | number:'1.4-4' }}
+            </ng-container>
+            <ng-container *ngIf="mode !== 'view'">
+              <input nz-input type="number" formControlName="hardware" step="0.0001" />
+              <span class="error-text" *ngIf="hasFieldError('hardware', 'required')">Hardware cost required.</span>
+              <span class="error-text" *ngIf="hasFieldError('hardware', 'min')">Cannot be zero or negative.</span>
+              <span class="error-text" *ngIf="hasFieldError('hardware', 'pattern')">Maximum 4 decimal places
+                allowed.</span>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider *ngIf="mode === 'view' && (order.status === 'Completed' || order.status === 'Invoiced' || order.status === 'Delivered')"></nz-divider>
+
+    <div nzRow nzGutter="24" style="margin-top: 20px;">
+      <div nz-col nzSpan="8" nzOffSet="16" *ngIf="mode === 'view' && (order.status === 'Completed' || order.status === 'Invoiced' || order.status === 'Delivered')">
+        <nz-form-item>
+          <nz-form-label>Total Revenue (RM)</nz-form-label>
+          <nz-form-control>
+            {{ order.totalRevenue | number:'1.4-4' }}
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <!-- Save Buttons -->
+    <div class="form-footer mt-3" *ngIf="(mode === 'edit' || mode === 'create') && selectedItems.length > 0">
+      <button nz-button nzType="default" (click)="onSave(true)" [nzLoading]="loading">Save as Draft</button>
+      <button nz-button nzType="primary" (click)="onSave(false)" [nzLoading]="loading"
+        style="margin-left: 8px;">Submit</button>
+    </div>
+  </form>
+</div>

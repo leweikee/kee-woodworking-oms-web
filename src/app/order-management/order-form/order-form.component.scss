@@ -1,0 +1,30 @@
+.ant-form-item {
+    margin-bottom: 0
+}
+
+.form-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 24px;
+}
+
+.server-error-list {
+  color: #ff4d4f; 
+}
+
+.header-row {
+  margin-bottom: 10px;
+}
+
+.error-text {
+  color: red;
+}
+
+.status-draft { color: gray; }
+.status-pending { color: purple; }
+.status-created { color: blue; }
+.status-inProgress { color: orange; }
+.status-completed { color: green; }
+.status-invoiced { color: teal; }
+.status-delivered { color: brown; }
