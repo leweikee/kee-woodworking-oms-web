@@ -1,0 +1,20 @@
+.summary-row .title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.summary-row .value {
+  font-size: 22px;
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+.summary-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.summary-row [nz-col] {
+  flex: 1 1 0;
+  min-width: 0;
+}
