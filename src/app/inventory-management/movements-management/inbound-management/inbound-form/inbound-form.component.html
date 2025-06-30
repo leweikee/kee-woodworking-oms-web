@@ -1,0 +1,71 @@
+<div class="form-container">
+  <div nz-row nzJustify="end" class="header-row" *ngIf="!this.acquisitionId">
+    <div nz-col>
+      <button nz-button nzShape="circle" nzType="primary" (click)="addItem()">
+        <nz-icon nzType="plus" nzTheme="outline"></nz-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Items Table -->
+  <nz-table [nzData]="selectedItems" [nzSize]="'small'" [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+        <th>Unit Price</th>
+        <th *ngIf="!acquisitionId">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of selectedItems; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.code }}</td>
+        <td>{{ item.name }}</td>
+        <td>
+          <span *ngIf="acquisitionId">{{ item.quantity }}</span>
+          <ng-container *ngIf="!acquisitionId">
+            <input nz-input type="number" name="quantity{{ i }}" min="1" step="1" [(ngModel)]="item.quantity" required
+              #quantityCtrl="ngModel" />
+
+            <div *ngIf="quantityCtrl.invalid && (quantityCtrl.dirty || quantityCtrl.touched)" class="error-text">
+              <div *ngIf="quantityCtrl.errors?.['required']">Quantity is required.</div>
+              <div *ngIf="quantityCtrl.errors?.['min']">Quantity must be at least 1.</div>
+            </div>
+
+            <!-- Custom integer check -->
+            <div *ngIf="item.quantity != null && !isInteger(item.quantity)" class="error-text">
+              Quantity must be an integer.
+            </div>
+          </ng-container>
+        </td>
+        <td>{{ item.unit }}</td>
+        <td>
+          <input nz-input type="number" name="unitPrice{{ i }}" min="0.0001" step="0.0001" [(ngModel)]="item.unitPrice"
+            required #unitPriceCtrl="ngModel" />
+          <div *ngIf="unitPriceCtrl.invalid && (unitPriceCtrl.dirty || unitPriceCtrl.touched)" class="error-text">
+            <div *ngIf="unitPriceCtrl.errors?.['required']">Unit Price is required.</div>
+            <div *ngIf="unitPriceCtrl.errors?.['min']">Unit Price cannot be negative or 0.</div>
+          </div>
+          <div *ngIf="item.unitPrice != null && !hasMaxFourDecimals(item.unitPrice)" class="error-text">
+            Unit Price can have max 4 decimal places.
+          </div>
+        </td>
+        <td *ngIf="!acquisitionId">
+          <button nz-button nzType="link" nzDanger (click)="removeItem(item.id)">Remove</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <!-- Save Button: Show only if there are items -->
+  <div class="form-footer" style="margin-top: 24px;" *ngIf="selectedItems.length > 0">
+    <button nz-button nzType="default" (click)="onSave()" [nzLoading]="loading">
+      Save
+      <nz-icon nzType="save" nzTheme="outline"></nz-icon>
+    </button>
+  </div>
+</div>

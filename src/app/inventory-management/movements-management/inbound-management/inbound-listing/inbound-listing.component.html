@@ -1,0 +1,94 @@
+<div class="container mt-4">
+  <div nz-row nzJustify="end" class="header-row">
+    <div nz-col>
+      <button nz-button nzShape="circle" nzType="primary" (click)="createInbound()">
+        <nz-icon nzType="plus" nzTheme="outline"></nz-icon>
+      </button>
+    </div>
+  </div>
+  <!--Search Field-->
+  <div nz-row nzJustify="space-between" nzAlign="middle">
+    <div nz-col nzSpan="17">
+      <nz-input-group nzPrefixIcon="search" [nzSuffix]="searchControl.value ? clearSearch : undefined">
+        <input type="text" nz-input [formControl]="searchControl" placeholder="Search by inventory code or name" />
+        <ng-template #clearSearch>
+          <span nz-icon nzType="close-circle" nzTheme="fill" (click)="resetSearch()"></span>
+        </ng-template>
+      </nz-input-group>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-select [formControl]="categoryControl" nzAllowClear nzPlaceHolder="All Category" style="display: block;">
+        <nz-option *ngFor="let category of categoryList" [nzValue]="category.value" [nzLabel]="category.label">
+        </nz-option>
+      </nz-select>
+    </div>
+  </div>
+
+  <nz-spin [nzSpinning]="loading">
+    <nz-table #userTable [nzData]="inboundList" [nzPageSize]="pageSize" [nzTotal]="totalCount"
+      [nzPageIndex]="pageNumber" [nzFrontPagination]="false" [nzShowPagination]="true"
+      (nzPageIndexChange)="onPageChange($event)">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th *ngFor="let col of columns" [attr.nzLeft]="col.left ? col.left : null">
+            {{ col.header }}
+          </th>
+          <th>Last PIC</th>
+          <th>Remark</th>
+          <th nzRight class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of inboundList; let i = index">
+          <td>{{ (pageNumber - 1) * pageSize + i + 1 }}</td>
+          <td *ngFor="let col of columns">
+            <ng-container [ngSwitch]="col.field">
+              <span *ngSwitchCase="'code'">{{ data.inventory.code }}</span>
+              <span *ngSwitchCase="'name'">{{ data.inventory.name }}</span>
+              <span *ngSwitchCase="'category'">{{ data.inventory.category }}</span>
+              <span *ngSwitchCase="'unit'">{{ data.inventory.unit }}</span>
+              <span *ngSwitchCase="'created'">{{ formatDate(data.created) }}</span>
+              <span *ngSwitchCase="'unitPrice'">{{ data.unitPrice | number: '1.2-2' }}</span>
+              <span *ngSwitchCase="'totalPrice'">{{ data.totalPrice | number: '1.2-2' }}</span>
+              <span *ngSwitchDefault>
+                {{ data[col.field] !== null && data[col.field] !== undefined ? data[col.field] : '-' }}
+              </span>
+            </ng-container>
+          </td>
+          <td>{{ data.lastModifiedBy ? data.lastModifiedBy : data.createdBy }}</td>
+          <!-- Remark -->
+          <td>
+            <!-- Reversed -->
+            <ng-container *ngIf="data.quantity === 0 && data.remainingQuantity === 0">
+              <span style="color: red; margin-right: 5px;">Reversed</span>
+              <span nz-icon nzType="info-circle" nzTheme="outline" nz-tooltip [nzTooltipTitle]="data.remark"></span>
+            </ng-container>
+
+            <!-- Linked to Acquisition -->
+            <ng-container *ngIf="data.acquisitionId">
+              AC{{ formatAcquisitionId(data.acquisitionId) }}
+            </ng-container>
+
+            <!-- Normal Remark -->
+            <ng-container *ngIf="!data.acquisitionId && !(data.quantity === 0 && data.remainingQuantity === 0)">
+              <span *ngIf="data.remark">{{ data.remark }}</span>
+              <span *ngIf="!data.remark">-</span>
+            </ng-container>
+          </td>
+          <td nzRight class="text-center">
+            <button nz-button nzType="link" nzSize="small" (click)="confirmReverse(data)"
+              [disabled]="data.quantity === 0 && data.remainingQuantity === 0">
+              <span nz-icon nzType="redo" nzTheme="outline"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-spin>
+
+  <ng-template #reasonTemplate>
+    <textarea rows="4" style="width: 100%;" [(ngModel)]="reverseReason" id="reverseReason"
+      placeholder="Reason"></textarea>
+  </ng-template>
+</div>
