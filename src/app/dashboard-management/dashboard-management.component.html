@@ -1,0 +1,14 @@
+<nz-tabset *ngIf="userRoles.includes('Admin')" [(nzSelectedIndex)]="selectedTabIndex" (nzSelectedIndexChange)="onTabChange($event)">
+  <nz-tab nzTitle="Overall Summary"></nz-tab>
+  <nz-tab nzTitle="Order Summary"></nz-tab>
+  <nz-tab nzTitle="Inventory Summary"></nz-tab>
+</nz-tabset>
+
+<ng-container [ngSwitch]="selectedTab">
+  <div style="margin-bottom: 16px;">
+    <span><b><i>Hi, Welcome Back!</i></b></span>
+  </div>
+  <app-admin-dashboard *ngSwitchCase="DashboardType.Admin"></app-admin-dashboard>
+  <app-order-dashboard *ngSwitchCase="DashboardType.Order"></app-order-dashboard>
+  <app-inventory-dashboard *ngSwitchCase="DashboardType.Inventory"></app-inventory-dashboard>
+</ng-container>
