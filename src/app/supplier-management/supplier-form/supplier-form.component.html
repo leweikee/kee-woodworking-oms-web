@@ -1,0 +1,78 @@
+<div class="form-container">
+  <div *ngIf="serverValidationErrors.length > 0" class="server-error-list">
+    <ul style="padding-left: 16px">
+      <li *ngFor="let error of serverValidationErrors">{{ error }}</li>
+    </ul>
+  </div>
+  
+  <form [formGroup]="supplierForm" nz-form [nzLayout]="'vertical'">
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="firstName">Name</nz-form-label>
+          <nz-form-control nzErrorTip="Supplier name is required">
+            <input nz-input formControlName="name" id="name" autocomplete="name" (input)="toUppercase($event)"/>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <div nz-row [nzGutter]="16" style="margin-top: 20px;">
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="email">Email</nz-form-label>
+          <nz-form-control [nzErrorTip]="emailError">
+            <input nz-input type="email" formControlName="email" id="email" autocomplete="email" />
+            <ng-template #emailError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Email is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('email')">
+                Invalid email format
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row [nzGutter]="16" style="margin-top: 20px;">
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="phoneNumber">Contact No</nz-form-label>
+          <nz-form-control [nzErrorTip]="phoneNumberError">
+            <input nz-input formControlName="phoneNumber" id="phoneNumber" autocomplete="tel" />
+            <ng-template #phoneNumberError let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                Phone Number is required
+              </ng-container>
+              <ng-container *ngIf="control.hasError('minlength') || control.hasError('maxlength')">
+                Must be 10-11 digits
+              </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row [nzGutter]="16" style="margin-top: 20px;">
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="contactPerson">Contact Person</nz-form-label>
+          <nz-form-control nzErrorTip="Contact person is required">
+            <input nz-input formControlName="contactPerson" id="contactPerson" autocomplete="name" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <button nz-button nzType="default" (click)="onSave()" [nzLoading]="loading">
+        Save
+        <nz-icon nzType="save" nzTheme="outline" />
+      </button>
+    </div>
+  </form>
+</div>

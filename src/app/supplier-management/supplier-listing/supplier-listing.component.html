@@ -1,0 +1,46 @@
+<div class="container mt-4">
+  <!--Search Field-->
+  <div nz-row nzJustify="space-between" nzAlign="middle">
+    <div nz-col nzSpan="14">
+      <nz-input-group nzPrefixIcon="search" [nzSuffix]="searchControl.value ? clearSearch : undefined">
+        <input type="text" nz-input [formControl]="searchControl" placeholder="Search by supplier name or email" />
+        <ng-template #clearSearch>
+          <span nz-icon nzType="close-circle" nzTheme="fill" (click)="resetSearch()"></span>
+        </ng-template>
+      </nz-input-group>
+    </div>
+    <div nz-col nzSpan="10" style="text-align: right;" *ngIf="hasAccess">
+        <button nz-button nzShape="circle" nzType="primary" (click)="createSupplier()">          
+          <nz-icon nzType="plus" nzTheme="outline"></nz-icon>
+        </button>
+    </div>
+  </div>
+
+
+  <nz-spin [nzSpinning]="loading">
+    <nz-table #userTable [nzData]="supplierList" [nzPageSize]="pageSize" [nzTotal]="totalCount" [nzPageIndex]="pageNumber"
+      [nzFrontPagination]="false" [nzShowPagination]="true" (nzPageIndexChange)="onPageChange($event)">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th *ngFor="let col of columns">{{ col.header }}</th>
+          <th class="text-center" *ngIf="hasAccess">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of supplierList; let i = index">
+          <td>{{ (pageNumber - 1) * pageSize + i + 1 }}</td>
+          <td *ngFor="let col of columns">{{ data[col.field] }}</td>
+          <td class="text-center" *ngIf="hasAccess">
+            <button nz-button nzType="link" nzSize="small" (click)="editSupplier(data)">
+              <span nz-icon nzType="edit" nzTheme="outline"></span>
+            </button>
+            <button nz-button nzType="link" nzSize="small" nzDanger (click)="confirmDelete(data)">
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-spin>
+</div>
