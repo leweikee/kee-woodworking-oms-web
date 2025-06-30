@@ -1,0 +1,67 @@
+/* You can add global styles to this file, and also import other style files */
+.ant-btn-primary {
+    background-color: #022641;
+
+    &:hover {
+        background-color: #034a7f;
+        border-color: #034a7f;
+    }
+}
+
+.ant-btn-default {
+  background-color: #24a342;
+  color: #ffffff;
+
+  &:hover {
+      background-color: #29b94a;
+      border-color: #29b94a;
+      color: #ffffff;
+  }
+}
+
+.ant-divider {
+  border-top-color: #022641;
+}
+
+.ant-input:hover,
+.ant-input-affix-wrapper:hover, 
+.ant-select-selector:hover {
+  border-color: #022641 !important;
+}
+
+.ant-input-focused,
+.ant-input-affix-wrapper-focused, 
+.ant-select-selector-focused {
+  border-color: #022641 !important;
+  box-shadow: 0 0 0 2px rgba(2, 38, 65, 0.2) !important;
+}
+
+.ant-input-prefix .ant-input-suffix{
+    .anticon {
+      color: #022641 !important;
+    }
+}
+
+.ant-table-thead > tr > th {
+  background-color: #f1f1f1;
+}
+
+.ant-modal-content {
+  border-top: 4px solid #022641;
+}
+
+.ant-modal-header {
+  border-bottom: 1px solid #022641;
+}
+
+.ant-modal-title {
+  font-size: 18px;
+}
+
+.ant-form-item-label {
+  font-weight: 600;
+}
+
+.ant-input[disabled] {
+  color: rgba(0, 0, 0, 0.548);
+}
