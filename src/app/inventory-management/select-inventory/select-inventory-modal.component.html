@@ -1,0 +1,44 @@
+<div style="margin-bottom: 10px;">
+  <nz-input-group nzPrefixIcon="search" [nzSuffix]="searchControl.value ? clearSearch : undefined">
+    <input type="text" nz-input [formControl]="searchControl" placeholder="Search by inventory code or name" />
+    <ng-template #clearSearch>
+      <span nz-icon nzType="close-circle" nzTheme="fill" (click)="resetSearch()"></span>
+    </ng-template>
+  </nz-input-group>
+</div>
+
+<form>
+  <nz-table [nzData]="filteredList" [nzFrontPagination]="false" [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Code</th>
+        <th>Name</th>
+        <th *ngIf="allowMultiple">Select</th>
+        <th *ngIf="!allowMultiple">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredList; let i = index; trackBy: trackById">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.code }}</td>
+        <td>{{ item.name }}</td>
+        <td *ngIf="allowMultiple">
+          <label>
+            <input type="checkbox" [checked]="isChecked(item)" (change)="toggleSelection(item, $event)" />
+          </label>
+        </td>
+        <td *ngIf="!allowMultiple">
+          <button nz-button nzSize="small" (click)="selectItem(item)">Select</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</form>
+
+<div *ngIf="allowMultiple" style="margin-top: 10px; text-align: right;">
+  <button nz-button nzType="default" (click)="confirmSelection()">
+    Confirm
+    <nz-icon nzType="save" nzTheme="outline"></nz-icon>
+  </button>
+</div>
