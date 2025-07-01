@@ -94,7 +94,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        this.message.error(error.message);
+        this.handleError(error);
         this.loading = false;
       }
     });
@@ -116,8 +116,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   handleError(error: any): void {
     let errorMsg = 'Login failed. Please try again.';
     
-    if (error.error?.message) {
-      errorMsg = error.error.message;
+    if (error?.message) {
+      errorMsg = error.message;
     } else if (error.status === 0) {
       errorMsg = 'Unable to connect to server. Please check your connection.';
     } else if (error.status === 401) {
