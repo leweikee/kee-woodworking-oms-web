@@ -94,7 +94,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        this.handleError(error);
+        this.message.error(error.message);
         this.loading = false;
       }
     });
