@@ -59,7 +59,7 @@
               "outputHashing": "all",
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
+                  "replace": "src/app/environment/environment.ts",
                   "with": "src/app/environment/environment.prod.ts"
                 }
               ]
