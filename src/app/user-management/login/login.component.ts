@@ -116,7 +116,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   handleError(error: any): void {
     let errorMsg = 'Login failed. Please try again.';
     
-    if (error?.message) {
+    if (error) {
       errorMsg = error.message;
     } else if (error.status === 0) {
       errorMsg = 'Unable to connect to server. Please check your connection.';

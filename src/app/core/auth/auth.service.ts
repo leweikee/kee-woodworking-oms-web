@@ -186,7 +186,7 @@ export class AuthService {
   }
 
   private normalizeError(error: any): Error {
-    if (error?.error?.message) return new Error(error.error.message);
+    if (error?.error?.Message) return new Error(error.error.Message);
     if (error?.message) return new Error(error.message);
     return new Error('Authentication failed');
   }
